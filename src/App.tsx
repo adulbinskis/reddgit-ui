@@ -1,9 +1,10 @@
-import {FC} from 'react';
+import {FC, lazy} from 'react';
 import './App.scss';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import {observer} from "mobx-react-lite";
 
-import Header from "./components/Header/Header";
+const Header = lazy(() => import('./components/Header/Header'));
+const MainBoard = lazy(() => import('./components/MainBoard/MainBoard'));
 
 
 const App: FC =()=> {
@@ -13,10 +14,8 @@ const App: FC =()=> {
       <Router>
           <Header/>
           <Routes>
-            <Route  path='/' element={
-              <div>
-                MainBoard <br/>
-              </div>}/>
+            <Route  path='/' element={ <MainBoard/> }/>
+            <Route path='/question/:id' element={ <MainBoard/> }/>
           </Routes> 
       </Router>
     </div>
