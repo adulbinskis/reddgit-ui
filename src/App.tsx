@@ -5,6 +5,7 @@ import {observer} from "mobx-react-lite";
 
 const Header = lazy(() => import('./components/Header/Header'));
 const MainBoard = lazy(() => import('./components/MainBoard/MainBoard'));
+const Question = lazy(() => import('./components/Question/Question'));  
 
 
 const App: FC =()=> {
@@ -15,7 +16,7 @@ const App: FC =()=> {
           <Header/>
           <Routes>
             <Route  path='/' element={ <MainBoard/> }/>
-            <Route path='/question/:id' element={ <MainBoard/> }/>
+            <Route path='/question/:id' element={ <Question/> }/>
           </Routes> 
       </Router>
     </div>

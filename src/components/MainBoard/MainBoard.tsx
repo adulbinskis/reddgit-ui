@@ -2,17 +2,16 @@ import { FC, useEffect, useState } from 'react';
 import './MainBoard.scss'
 import { observer } from 'mobx-react-lite';
 import { QuestionsResponse } from './models/QuestionsResponse';
-import QuestionsService from './services/QuestionsService';
+import MainBoardService from './services/MainBoardService';
 import { formatDate } from '../../utils/dateFormat';
 
-const App: FC =()=> {
+const MainBoard: FC =()=> {
   const [questionsList, setQuestionsList] = useState<QuestionsResponse[]>([] as QuestionsResponse[]);
   const [searchCriteria, setSearchCriteria] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
-       const response = await QuestionsService.getQuestionsList(searchCriteria);
-       console.log(response);
+       const response = await MainBoardService.getQuestionsList(searchCriteria);
        setQuestionsList(response.data);
     }
     fetchData();
@@ -20,7 +19,7 @@ const App: FC =()=> {
 
     return (
       <div className='mainBoard'>
-        <div className='mainBoard__container'>
+        <div className='mainBoard__search'>
             <input 
               className='mainBoard__input' 
               onChange={(e) => setSearchCriteria(e.target.value)}
@@ -31,7 +30,11 @@ const App: FC =()=> {
 
         {
           questionsList.map((question) => 
-            <div className='mainBoard__post'>
+            <div 
+              className='mainBoard__post' 
+              key={question.id} 
+              onClick={() => window.location.href = `/question/${question.id}`
+            }>
               <h5 className='mainBoard__post__user'>
                 {question.userName}
               </h5>
@@ -42,7 +45,7 @@ const App: FC =()=> {
                 {question.content}
               </h3>
               <h6 className='mainBoard__post__date'>
-                {formatDate(question.createdAt.toString(), 'MM-dd-yyyy HH:mm')}
+                {formatDate(question.createdAt, 'MM-dd-yyyy HH:mm')}
               </h6>
             </div>
           )
@@ -51,4 +54,4 @@ const App: FC =()=> {
     );
   }
   
-  export default observer(App)
+  export default observer(MainBoard)

@@ -35,6 +35,13 @@ const Header: FC = () =>{
         <header className="header">
             <div className="header__container">
                 <div className="header__content">
+                    <button 
+                        type='button' 
+                        className="button button--outline-light"
+                        onClick={() => window.location.href = `../`}
+                    >
+                        <i className="fa fa-home"></i> Home
+                    </button>
                     <div className="header__content__buttons">
                         {!store.isAuth ?
                             <>
@@ -53,6 +60,7 @@ const Header: FC = () =>{
                 <Register onClose={handleCloseModal} openLogin={handleOpenLogin} />
             </Modal>
         </header>
+
     )
 }
 

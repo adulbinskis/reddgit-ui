@@ -2,8 +2,10 @@
     max-width: 50%;
     margin-left: auto;
     margin-right: auto;
+
+
   
-    &__container {
+    &__search {
       width: 50svw;
       display: flex;
       justify-content: center;
@@ -34,6 +36,10 @@
         text-overflow: ellipsis;
         white-space: pre;
       }
+
+    }
+    &__post:hover{
+      background-color: rgb(65, 65, 66);
     }
   }
   

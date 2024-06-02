@@ -1,4 +1,7 @@
-export function formatDate(dateString: string, format: string): string {
+export function formatDate(dateString: Date, format: string): string {
+
+    if(dateString === undefined) return '';
+    
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
         year: format.includes('yyyy') ? 'numeric' : undefined,

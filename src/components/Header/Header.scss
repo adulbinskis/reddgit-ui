@@ -8,6 +8,10 @@
     }
 
     &__content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
         &__buttons {
             text-align: end;
             .button {
@@ -34,5 +38,29 @@
                 }
             }
         }
+    }
+}
+
+.button {
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.3s ease;
+
+    &--outline-light {
+        background-color: transparent;
+        color: #fff;
+        border: 1px solid #fff;
+    }
+
+    &--warning {
+        background-color: #ffc107;
+        color: #212529;
+        border: 1px solid #ffc107;
+    }
+
+    &:hover {
+        background-color: lighten(#f0f0f0, 10%);
+        color: #212529;
     }
 }
