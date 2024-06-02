@@ -12,7 +12,10 @@ export default class AnswerService {
         return $api.put<AnswerDetail>('/answer/updateAnswer', {answerId, content})
     }
 
-    static async deleteAnswer(id: string): Promise<AxiosResponse<AnswerDetail>> {
-        return $api.delete<AnswerDetail>('/answer/deleteAnswer', {params: {id: id}})
+    static async deleteAnswer(answerId: string): Promise<AxiosResponse<AnswerDetail>> {
+        return $api.delete<AnswerDetail>('/answer/deleteAnswer', {
+            data: { answerId: answerId }
+        });
     }
+
 }

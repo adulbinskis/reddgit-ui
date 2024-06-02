@@ -41,9 +41,7 @@ const MainBoard: FC =()=> {
               <h2 className='mainBoard__post__title'>
                 {question.title}
               </h2>
-              <h3 className='mainBoard__post__content'>
-                {question.content}
-              </h3>
+              <div className='question__post__content' dangerouslySetInnerHTML={{ __html: question.content }} />
               <h6 className='mainBoard__post__date'>
                 {formatDate(question.createdAt, 'MM-dd-yyyy HH:mm')}
               </h6>

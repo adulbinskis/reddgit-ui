@@ -16,6 +16,9 @@ export default class QuestionService {
     }
 
     static async deleteQuestion(questionId: string): Promise<AxiosResponse<QuestionDetail>> {
-        return $api.delete<QuestionDetail>('/question/DeleteQuestion', {params: {questionId: questionId}})
+        return $api.delete<QuestionDetail>('/question/DeleteQuestion', {
+            data: { questionId: questionId }
+        });
     }
+    
 }

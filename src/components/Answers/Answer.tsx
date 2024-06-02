@@ -7,16 +7,19 @@ import { formatDate } from '../../utils/dateFormat';
 import { AnswerDetail } from './models/AnswerDetail';
 import Modal from '../../modal/modal';
 import EditAnswer from './EditAnswer';
+import AnswerService from './services/AnswerService';
 
 type Props = {
     answers: AnswerDetail[] 
+    removeAnswer: (deletedAnswerId: string) => void
 };
 
-const Answer: FC<Props> = ({ answers }) => {
+const Answer: FC<Props> = ({ answers, removeAnswer }) => {
     const {store} = useContext(Context);
     const [editMode, setEditMode] = useState(false);
     const [answerToEdit, setAnswerToEdit] = useState<AnswerDetail>({} as AnswerDetail);
-
+    const [answerDeleted, setAnswerDeleted] = useState<AnswerDetail>({} as AnswerDetail);
+ 
     useEffect(() => {
         if (answerToEdit && answerToEdit.content) {
             answers.map((ans) => {
@@ -32,6 +35,12 @@ const Answer: FC<Props> = ({ answers }) => {
         setAnswerToEdit(answer);
     }
 
+    const handleDeleteAnswer = async (answer: AnswerDetail) => {
+        const response = await AnswerService.deleteAnswer(answer.id);
+        removeAnswer(response.data.id);
+    }
+    
+
     if (!answers) {
         return null;
     }
@@ -41,12 +50,14 @@ const Answer: FC<Props> = ({ answers }) => {
         {answers.map((answer) => (
             <div className='answer__post' key={answer.id} >
                 {store.user.userId === answer.userId?
-                    <button 
-                        className='button button--outline-light' 
-                        onClick={() =>{handleEditAnswer(answer); setEditMode(true)} }
-                    >
-                        Edit
-                    </button>: null
+                    <>
+                        <button className='button button--outline-light' onClick={() =>{handleEditAnswer(answer); setEditMode(true)} }>
+                            Edit
+                        </button>
+                        <button className='button button--outline-light' onClick={() => handleDeleteAnswer(answer)}> Delete </button>
+                    </>:null
+
+
                 }
                 <h5 className='answer__post__user'>
                     {answer.userName}

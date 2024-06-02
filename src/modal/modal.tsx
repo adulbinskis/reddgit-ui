@@ -19,7 +19,7 @@ const Modal: React.FC<Props> = ({ modalOpen, children, onClose }) => {
             <div className="custom-modal__dialog">
                 <div className="custom-modal__content">
                     <div className="custom-modal__header">
-                        <h5 className="custom-modal__title">Hey user!</h5>
+                        <h5 className="custom-modal__title">{"<)=_=)>"}</h5>
                         <button type="button" className="custom-modal__close-btn" aria-label="Close" onClick={onClose}></button>
                     </div>
                     <div className="custom-modal__body">

@@ -10,12 +10,14 @@ import { formatDate } from '../../utils/dateFormat';
 import Answer from '../Answers/Answer';
 import Modal from '../../modal/modal';
 import EditQuestion from './EditQuestion';
+import CreateAnswer from '../Answers/CreateAnswer';
 
 const Question: FC =()=> {
     const { id } = useParams<{ id: string }>();
     const {store} = useContext(Context);
     const [question, setQuestion] = useState<QuestionDetail>({} as QuestionDetail);
     const [editMode, setEditMode] = useState(false);
+    const [createAnswerOpen, setCreateAnswerOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -26,6 +28,14 @@ const Question: FC =()=> {
         };
         fetchData();
     }, [id]);
+
+    const removeAnswer = (deletedAnswerId: string) => {
+        const updatedAnswers = question.answers.filter(ans => ans.id !== deletedAnswerId);
+        setQuestion(prevQuestion => ({
+            ...prevQuestion,
+            answers: updatedAnswers
+        }));
+    };
 
     if (!question) {
         return null;
@@ -47,6 +57,14 @@ const Question: FC =()=> {
                         Edit
                     </button>: null
                 }
+                {store.isAuth ?
+                    <button 
+                        className='button button--outline-light' 
+                        onClick={() => setCreateAnswerOpen(true)}
+                    >
+                        Answer
+                    </button>: null
+                }
                 
                 <h5 className='question__post__user'>
                     {question.userName}
@@ -60,10 +78,13 @@ const Question: FC =()=> {
                 </h6>
             </div>
         }
+        <Modal modalOpen={createAnswerOpen} onClose={() => setCreateAnswerOpen(false)}>
+            <CreateAnswer setQuestion={setQuestion} question={question} onClose={() => setCreateAnswerOpen(false)}/>
+        </Modal>
         <Modal modalOpen={editMode} onClose={() => setEditMode(false)}>
             <EditQuestion question={question} onClose={() => setEditMode(false)}/>
         </Modal>
-        <Answer answers={question.answers}/>
+        <Answer removeAnswer={removeAnswer} answers={question.answers}/>
       </div>
     );
   }

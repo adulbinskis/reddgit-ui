@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import './EditAnswer.scss'
 import { observer } from 'mobx-react-lite';
 import { AnswerDetail } from './models/AnswerDetail';

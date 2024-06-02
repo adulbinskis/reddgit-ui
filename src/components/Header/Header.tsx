@@ -5,12 +5,14 @@ import Login from "../Authorization/Login";
 import Register from "../Authorization/Register";
 import { Context } from "../..";
 import "./Header.scss"
+import CreateQuestion from '../Question/CreateQuestion';
 
 const Header: FC = () =>{
     const {store} = useContext(Context);
 
     const [loginModalOpen, setLoginModalOpen] = useState(false);
     const [registerModalOpen, setRegisterModalOpen] = useState(false);
+    const [createOpen, setCreateOpen] = useState(false);
 
     const handleOpenLogin = () => {
         setLoginModalOpen(true);
@@ -27,6 +29,10 @@ const Header: FC = () =>{
         setRegisterModalOpen(false);
     };
 
+    const handleOpenCreate = () => {
+        setCreateOpen(true);
+    }
+
     const handleLogout = async () => {
         await store.logout();
     };
@@ -35,6 +41,7 @@ const Header: FC = () =>{
         <header className="header">
             <div className="header__container">
                 <div className="header__content">
+                    <div className='header__content__buttons'>
                     <button 
                         type='button' 
                         className="button button--outline-light"
@@ -42,6 +49,11 @@ const Header: FC = () =>{
                     >
                         <i className="fa fa-home"></i> Home
                     </button>
+                    {store.isAuth ?
+                        <button className="button button--outline-light" onClick={handleOpenCreate}>Create Question</button>: null
+                    }
+                    
+                    </div>
                     <div className="header__content__buttons">
                         {!store.isAuth ?
                             <>
@@ -58,6 +70,9 @@ const Header: FC = () =>{
             </Modal>
             <Modal modalOpen={registerModalOpen} onClose={handleCloseModal}>
                 <Register onClose={handleCloseModal} openLogin={handleOpenLogin} />
+            </Modal>
+            <Modal modalOpen={createOpen} onClose={()=>setCreateOpen(false)}>
+                <CreateQuestion onClose={() => setCreateOpen(false)}/>     
             </Modal>
         </header>
 
