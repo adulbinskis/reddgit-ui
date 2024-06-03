@@ -3,9 +3,9 @@ import { observer } from 'mobx-react-lite';
 import Modal from "../../modal/modal";
 import Login from "../Authorization/Login";
 import Register from "../Authorization/Register";
-import { Context } from "../..";
 import "./Header.scss"
 import CreateQuestion from '../Question/CreateQuestion';
+import { Context } from '../../store/rootContextProvider';
 
 const Header: FC = () =>{
     const {store} = useContext(Context);

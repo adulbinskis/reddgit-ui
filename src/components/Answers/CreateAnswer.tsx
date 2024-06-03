@@ -2,24 +2,25 @@ import './CreateAnswer.scss';
 import { FC, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import AnswerService from './services/AnswerService';
-import { QuestionDetail } from '../Question/models/QuestionDetail';
+import { useQuestions } from '../Question/state/QuestionsProvider';
+import { useAnswers } from './state/AnswersContext';
 
 
 type Props = {
-    question: QuestionDetail;
     onClose: () => void;
-    setQuestion: React.Dispatch<React.SetStateAction<QuestionDetail>>
 };
 
-const CreateAnswer: FC<Props> = ({onClose, question, setQuestion}) => {
+const CreateAnswer: FC<Props> = ({ onClose }) => {
     const [content, setContent] = useState('');
+    const { question } = useQuestions();
+    const { answers, setAnswers } = useAnswers();
 
     const handleCreate = async () => {
         try {
             const response = await AnswerService.createAnswer(question.id, content.replace(/\n/g, '<br>'));
             if (response && response.data) {
                 setContent('');
-                setQuestion({ ...question, answers: [response.data, ...question.answers] });
+                setAnswers([response.data, ...answers]);
                 onClose();
             }
 

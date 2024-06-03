@@ -25,7 +25,6 @@ const Question: FC<Props> =({ answer, onClose })=> {
     if (!answer) {
         return null;
     }
-
     
     return (
       <div className='editAnswer'>

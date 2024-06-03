@@ -4,6 +4,11 @@ import { AnswerDetail } from "../models/AnswerDetail";
 
 export default class AnswerService {
 
+    
+    static async getQuestionAnswers(questionId: string): Promise<AxiosResponse<AnswerDetail[]>> {
+        return $api.get<AnswerDetail[]>('/answer/getQuestionAnswers',{params: {questionId: questionId}})
+    }
+
     static async createAnswer(questionId: string, content: string): Promise<AxiosResponse<AnswerDetail>> {
         return $api.post<AnswerDetail>('/answer/createAnswer', {questionId, content})
     }

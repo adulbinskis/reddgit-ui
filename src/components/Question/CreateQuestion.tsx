@@ -3,12 +3,15 @@ import { FC, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import QuestionService from './services/QuestionService';
+import { useQuestions } from './state/QuestionsProvider';
 
 type Props = {
     onClose: () => void;
 };
 
 const QuestionCreate: FC<Props> = ({onClose}) => {
+    const { questions, setQuestions } = useQuestions();
+
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
 
@@ -18,6 +21,7 @@ const QuestionCreate: FC<Props> = ({onClose}) => {
             if (response && response.data) {
                 setTitle('');
                 setContent('');
+                setQuestions([response.data, ...questions]);
                 onClose();
             }
         } catch (error) {

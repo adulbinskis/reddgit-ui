@@ -1,9 +1,9 @@
 import { AxiosResponse } from "axios";
 import $api from "../../../http";
-import { QuestionsResponse } from "../models/QuestionsResponse";
+import { QuestionDetail } from "../../Question/models/QuestionDetail";
 
 export default class MainBoardService {
-    static async getQuestionsList(searchCriteria: string): Promise<AxiosResponse<QuestionsResponse[]>> {
-        return $api.get<QuestionsResponse[]>('/question/getQuestionsList',{params: {searchCriteria: searchCriteria}})
+    static async getQuestionsList(searchCriteria: string): Promise<AxiosResponse<QuestionDetail[]>> {
+        return $api.get<QuestionDetail[]>('/question/getQuestionsList',{params: {searchCriteria: searchCriteria}})
     }
 }

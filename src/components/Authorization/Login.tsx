@@ -1,7 +1,7 @@
 import React, {FC, useState, useContext} from 'react';
 import { observer } from 'mobx-react-lite';
-import { Context } from '../..';
 import './Login.scss';
+import { Context } from '../../store/rootContextProvider';
 
 type Props = {
     onClose: () => void;

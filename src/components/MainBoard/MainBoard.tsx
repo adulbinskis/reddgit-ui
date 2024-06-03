@@ -1,21 +1,21 @@
 import { FC, useEffect, useState } from 'react';
 import './MainBoard.scss'
 import { observer } from 'mobx-react-lite';
-import { QuestionsResponse } from './models/QuestionsResponse';
 import MainBoardService from './services/MainBoardService';
 import { formatDate } from '../../utils/dateFormat';
+import { useQuestions } from '../Question/state/QuestionsProvider';
 
 const MainBoard: FC =()=> {
-  const [questionsList, setQuestionsList] = useState<QuestionsResponse[]>([] as QuestionsResponse[]);
+  const { questions, setQuestions } = useQuestions();
   const [searchCriteria, setSearchCriteria] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
        const response = await MainBoardService.getQuestionsList(searchCriteria);
-       setQuestionsList(response.data);
+       setQuestions(response.data);
     }
     fetchData();
-  }, [searchCriteria]);
+  }, [searchCriteria, setQuestions]);
 
     return (
       <div className='mainBoard'>
@@ -29,7 +29,7 @@ const MainBoard: FC =()=> {
         </div>
 
         {
-          questionsList.map((question) => 
+          questions.map((question) => 
             <div 
               className='mainBoard__post' 
               key={question.id} 

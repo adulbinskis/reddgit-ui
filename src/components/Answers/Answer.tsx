@@ -1,35 +1,33 @@
 import { FC, useContext, useEffect, useState } from 'react';
 import './Answer.scss'
 import { observer } from 'mobx-react-lite';
-import { Context } from '../..';
 
 import { formatDate } from '../../utils/dateFormat';
 import { AnswerDetail } from './models/AnswerDetail';
 import Modal from '../../modal/modal';
 import EditAnswer from './EditAnswer';
 import AnswerService from './services/AnswerService';
+import { Context } from '../../store/rootContextProvider';
+import { useAnswers } from './state/AnswersContext';
 
 type Props = {
-    answers: AnswerDetail[] 
-    removeAnswer: (deletedAnswerId: string) => void
+    questionId: string;
 };
 
-const Answer: FC<Props> = ({ answers, removeAnswer }) => {
-    const {store} = useContext(Context);
+const Answer: FC<Props> = ({ questionId }) => {
+    const { store } = useContext(Context);
+    const { answers, setAnswers } = useAnswers();
+
     const [editMode, setEditMode] = useState(false);
     const [answerToEdit, setAnswerToEdit] = useState<AnswerDetail>({} as AnswerDetail);
-    const [answerDeleted, setAnswerDeleted] = useState<AnswerDetail>({} as AnswerDetail);
- 
+
     useEffect(() => {
-        if (answerToEdit && answerToEdit.content) {
-            answers.map((ans) => {
-                if (ans.id === answerToEdit.id) {
-                    return { content: answerToEdit.content };
-                }
-                return ans;
-            });
+        const fetchData = async () => {
+           const response = await AnswerService.getQuestionAnswers(questionId);
+           setAnswers(response.data);
         }
-    }, [answerToEdit, answers]);
+        fetchData();
+      }, [questionId, setAnswers]);
 
     const handleEditAnswer = (answer: AnswerDetail) => {
         setAnswerToEdit(answer);
@@ -39,6 +37,11 @@ const Answer: FC<Props> = ({ answers, removeAnswer }) => {
         const response = await AnswerService.deleteAnswer(answer.id);
         removeAnswer(response.data.id);
     }
+
+    const removeAnswer = (deletedAnswerId: string) => {
+        const updatedAnswers = answers.filter(ans => ans.id !== deletedAnswerId);
+        setAnswers(updatedAnswers);
+    };
     
 
     if (!answers) {

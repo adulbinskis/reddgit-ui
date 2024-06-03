@@ -1,21 +1,22 @@
 import { FC, useContext, useEffect, useState } from 'react';
 import './Question.scss'
 import { observer } from 'mobx-react-lite';
-import { Context } from '../..';
 import { useParams } from 'react-router-dom';
 
 import QuestionService from './services/QuestionService';
-import { QuestionDetail } from './models/QuestionDetail';
 import { formatDate } from '../../utils/dateFormat';
 import Answer from '../Answers/Answer';
 import Modal from '../../modal/modal';
 import EditQuestion from './EditQuestion';
+import { Context } from '../../store/rootContextProvider';
+import { useQuestions } from './state/QuestionsProvider';
 import CreateAnswer from '../Answers/CreateAnswer';
 
 const Question: FC =()=> {
     const { id } = useParams<{ id: string }>();
     const {store} = useContext(Context);
-    const [question, setQuestion] = useState<QuestionDetail>({} as QuestionDetail);
+    const { question, setQuestion } = useQuestions();
+    
     const [editMode, setEditMode] = useState(false);
     const [createAnswerOpen, setCreateAnswerOpen] = useState(false);
 
@@ -27,21 +28,17 @@ const Question: FC =()=> {
           }
         };
         fetchData();
-    }, [id]);
+    }, [id, setQuestion]);
 
-    const removeAnswer = (deletedAnswerId: string) => {
-        const updatedAnswers = question.answers.filter(ans => ans.id !== deletedAnswerId);
-        setQuestion(prevQuestion => ({
-            ...prevQuestion,
-            answers: updatedAnswers
-        }));
-    };
+    const handleDeleteQuestion = async (questionId: string) => {
+        const response = await QuestionService.deleteQuestion(questionId);
+        setQuestion(response.data);
+    }
 
     if (!question) {
         return null;
     }
 
-    
     return (
       <div className='question'>
         {
@@ -50,12 +47,16 @@ const Question: FC =()=> {
                 key={question.id} 
             >
                 {store.user.userId === question.userId?
-                    <button 
-                        className='button button--outline-light' 
-                        onClick={() => setEditMode(true)}
+                <>
+                    <button className='button button--outline-light' onClick={() => {handleDeleteQuestion(question.id); window.location.href = `/` }}>
+                        Delete
+                    </button>
+                    <button className='button button--outline-light' onClick={() => setEditMode(true)}
                     >
                         Edit
-                    </button>: null
+                    </button>
+                </>: null
+                    
                 }
                 {store.isAuth ?
                     <button 
@@ -79,12 +80,12 @@ const Question: FC =()=> {
             </div>
         }
         <Modal modalOpen={createAnswerOpen} onClose={() => setCreateAnswerOpen(false)}>
-            <CreateAnswer setQuestion={setQuestion} question={question} onClose={() => setCreateAnswerOpen(false)}/>
+            <CreateAnswer onClose={() => setCreateAnswerOpen(false)}/>
         </Modal>
         <Modal modalOpen={editMode} onClose={() => setEditMode(false)}>
             <EditQuestion question={question} onClose={() => setEditMode(false)}/>
         </Modal>
-        <Answer removeAnswer={removeAnswer} answers={question.answers}/>
+        <Answer questionId={question.id}/>
       </div>
     );
   }

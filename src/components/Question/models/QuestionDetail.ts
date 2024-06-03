@@ -7,5 +7,4 @@ export interface QuestionDetail{
     userName: string;
     userId: string;
     createdAt: Date;
-    answers: AnswerDetail[];
 }
