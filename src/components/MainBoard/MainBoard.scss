@@ -1,45 +1,53 @@
 .mainBoard {
-    max-width: 50%;
-    margin-left: auto;
-    margin-right: auto;
+  max-width: 50%;
+  margin-left: auto;
+  margin-right: auto;
 
 
-  
-    &__search {
-      width: 50svw;
-      display: flex;
-      justify-content: center;
-      padding: 1rem;
-    }
-  
-    &__input {
-      width: 50%;
-      height: 2rem;
-      border-radius: 1rem;
-    }
 
-    &__post {
-      border-bottom: 1px solid rgb(65, 65, 66);
-      border-top: 1px solid rgb(65, 65, 66);
-      color:white;
-      width: 100%;
-      border-radius: 1rem;
-      padding: 1rem;
-      margin: 1rem;
+  &__search {
+    width: 50svw;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  &__input {
+    width: 50%;
+    height: 2rem;
+    border-radius: 1rem;
+  }
+
+  &__post {
+    border-bottom: 1px solid rgb(65, 65, 66);
+    border-top: 1px solid rgb(65, 65, 66);
+    color:white;
+    width: 100%;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: fit-content;
+
+    &__content {
+      max-height: 5rem;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-height: fit-content;
-
-      &__content {
-        max-height: 5rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: pre;
-      }
-
+      white-space: pre;
     }
-    &__post:hover{
-      background-color: rgb(65, 65, 66);
-    }
+
   }
+  &__post:hover{
+    background-color: rgb(65, 65, 66);
+  }
+}
+
+.pagination{
+  
+  &__counter{
+    margin-right: 1rem;
+    color: white;
+  }
+}
   
