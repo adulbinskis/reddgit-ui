@@ -1,6 +1,8 @@
-import './CreateQuestion.scss'
-import { FC, useState } from 'react';
+import './CreateQuestion.scss';
+import { FC } from 'react';
 import { observer } from 'mobx-react-lite';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 import QuestionService from './services/QuestionService';
 import { useQuestions } from './state/QuestionsProvider';
@@ -9,18 +11,29 @@ type Props = {
     onClose: () => void;
 };
 
-const QuestionCreate: FC<Props> = ({onClose}) => {
+const QuestionCreate: FC<Props> = ({ onClose }) => {
     const { questions, setQuestions } = useQuestions();
 
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const initialValues = {
+        title: '',
+        content: ''
+    };
 
-    const handleCreate = async () => {
+    const validationSchema = Yup.object({
+        title: Yup.string()
+            .required('Title is required')
+            .min(5, 'Title must be at least 5 characters long')
+            .max(128, 'Title must be at most 128 characters long'),
+        content: Yup.string()
+            .required('Content is required')
+            .min(10, 'Content must be at least 10 characters long')
+            .max(2048, 'Content must be at most 2048 characters long')
+    });
+
+    const handleCreate = async (values: { title: string; content: string }) => {
         try {
-            const response = await QuestionService.createQuestion(title, content.replace(/\n/g, '<br>'));
+            const response = await QuestionService.createQuestion(values.title, values.content.replace(/\n/g, '<br>'));
             if (response && response.data) {
-                setTitle('');
-                setContent('');
                 setQuestions([response.data, ...questions]);
                 onClose();
             }
@@ -32,18 +45,38 @@ const QuestionCreate: FC<Props> = ({onClose}) => {
     return (
         <div className='createQuestion'>
             <h2>Create New Question</h2>
-            <input
-                type='text'
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder='Title'
-            />
-            <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder='Content'
-            ></textarea>
-            <button onClick={handleCreate}>Save</button>
+            <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={(values, { resetForm }) => {
+                    handleCreate(values);
+                    resetForm();
+                }}
+            >
+                {({ isValid, dirty }) => (
+                    <Form>
+                        <div>
+                            <Field
+                                type='text'
+                                name='title'
+                                placeholder='Title'
+                            />
+                            <ErrorMessage name='title' component='div' className='error' />
+                        </div>
+                        <div>
+                            <Field
+                                as='textarea'
+                                name='content'
+                                placeholder='Content'
+                            />
+                            <ErrorMessage name='content' component='div' className='error' />
+                        </div>
+                        <button type='submit' disabled={!(isValid && dirty)}>
+                            Save
+                        </button>
+                    </Form>
+                )}
+            </Formik>
         </div>
     );
 };

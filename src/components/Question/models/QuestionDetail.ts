@@ -1,4 +1,3 @@
-import { AnswerDetail } from '../../Answers/models/AnswerDetail';
 
 export interface QuestionDetail{
     id: string;

@@ -1,69 +1,68 @@
-import React, {FC, useState, useContext} from 'react';
+import React, { FC, useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import './Login.scss';
 import { Context } from '../../store/rootContextProvider';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 type Props = {
     onClose: () => void;
 };
 
 const Login: FC<Props> = ({ onClose }) => {
-    const {store} = useContext(Context);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
+    const { store } = useContext(Context);
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setError(null);
-        setSuccess(null);
-
+    const handleSubmit = async (values: { email: string, password: string }) => {
         try {
-           await store.login(email, password);
-            setSuccess('Registration successful!');
+            await store.login(values.email, values.password);
             onClose();
         } catch (error) {
-            setError('Registration failed. Please try again.');
+            console.error('Login failed:', error);
         }
     };
 
-    return(
-        <main className="login-form">
-        <form onSubmit={handleSubmit}>
-            <h1 className="login-form__title">Please login</h1>
-    
-            <div className="login-form__field">
-                <input
-                    type="email"
-                    className="login-form__input"
-                    id="email"
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </div>
-            
-            <div className="login-form__field">
-                <input
-                    type="password"
-                    className="login-form__input"
-                    id="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </div>
-    
-            {error && <div className="login-form__error">{error}</div>}
-            {success && <div className="login-form__success">{success}</div>}
-    
-            <button className="login-form__button" type="submit">
-                Login
-            </button>
-        </form>
-    </main>
-    )
-}
+    const validationSchema = Yup.object().shape({
+        email: Yup.string().email('Invalid email address').required('Email is required'),
+        password: Yup.string()
+            .required('Password is required')   
+            .min(6, 'Password must be at least 6 characters long')
+            .max(254, 'Password must be at most 254 characters long')
+            .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+   
+    });
 
-export default observer(Login)
+    return (
+        <div className="login-form">
+            <h1 className="login-form__title">Please login</h1>
+            <Formik
+                initialValues={{ email: '', password: '' }}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+            >
+                <Form>
+                    <div className="login-form__field">
+                        <Field
+                            type="email"
+                            name="email"
+                            className="login-form__input"
+                            placeholder="name@example.com"
+                        />
+                        <ErrorMessage name="email" component="div" className="login-form__error" />
+                    </div>
+                    <div className="login-form__field">
+                        <Field
+                            type="password"
+                            name="password"
+                            className="login-form__input"
+                            placeholder="Password"
+                        />
+                        <ErrorMessage name="password" component="div" className="login-form__error" />
+                    </div>
+                    <button className="login-form__button" type="submit">Login</button>
+                </Form>
+            </Formik>
+        </div>
+    );
+};
+
+export default observer(Login);

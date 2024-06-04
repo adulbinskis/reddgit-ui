@@ -1,84 +1,76 @@
-import React, {FC, useState, useContext} from 'react';
+import React, { FC, useContext } from 'react';
 import { observer } from 'mobx-react-lite';
-import './Register.scss'
+import './Register.scss';
 import { Context } from '../../store/rootContextProvider';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 type Props = {
     onClose: () => void;
     openLogin: () => void;
 };
 
-const Register: FC<Props> = ({ onClose, openLogin }) =>{
-    const {store} = useContext(Context);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [userName, setUserName] = useState('');
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
+const Register: FC<Props> = ({ onClose, openLogin }) => {
+    const { store } = useContext(Context);
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setError(null);
-        setSuccess(null);
-
-        try {
-            await store.registration(email, userName, password);
-            setSuccess('Registration successful!');
-            onClose();
-            openLogin();
-        } catch (error) {
-            setError('Registration failed. Please try again.');
-        }
-    };
-
-    return(
+    return (
         <main className="register-form">
-            <form onSubmit={handleSubmit}>
-                <h1 className="register-form__title">Please register</h1>
+            <Formik
+                initialValues={{
+                    email: '',
+                    userName: '',
+                    password: ''
+                }}
+                validationSchema={Yup.object({
+                    email: Yup.string().email('Invalid email address').required('Required'),
+                    userName: Yup.string()
+                        .required('Required')
+                        .min(3, 'Password must be at least 3 characters long')
+                        .max(254, 'Password must be at most 254 characters long'),
+                    password: Yup.string()            
+                        .required('Password is required')   
+                        .min(6, 'Password must be at least 6 characters long')
+                        .max(254, 'Password must be at most 254 characters long')
+                        .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+                })}
+                onSubmit={async (values, { setSubmitting, setErrors }) => {
+                    try {
+                        await store.registration(values.email, values.userName, values.password);
+                        onClose();
+                        openLogin();
+                    } catch (error) {
+                        setErrors({ password: 'Registration failed. Please try again.' });
+                    }
+                    setSubmitting(false);
+                }}
+            >
+                <Form>
+                    <h1 className="register-form__title">Please register</h1>
 
-                <div className="register-form__field">
-                    <input
-                        type="email"
-                        className="register-form__input"
-                        id="email"
-                        placeholder="name@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
+                    <div className="register-form__field">
+                        <Field type="email" name="email" placeholder="name@example.com" className="register-form__input" />
+                        <ErrorMessage name="email" component="div" className="register-form__error" />
+                    </div>
 
-                <div className="register-form__field">
-                    <input
-                        type="text"
-                        className="register-form__input"
-                        id="username"
-                        placeholder="User name"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
-                    />
-                </div>
+                    <div className="register-form__field">
+                        <Field type="text" name="userName" placeholder="User name" className="register-form__input" />
+                        <ErrorMessage name="userName" component="div" className="register-form__error" />
+                    </div>
 
-                <div className="register-form__field">
-                    <input
-                        type="password"
-                        className="register-form__input"
-                        id="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
+                    <div className="register-form__field">
+                        <Field type="password" name="password" placeholder="Password" className="register-form__input" />
+                        <ErrorMessage name="password" component="div" className="register-form__error" />
+                    </div>
 
-                {error && <div className="register-form__error">{error}</div>}
-                {success && <div className="register-form__success">{success}</div>}
+                    <ErrorMessage name="submit" component="div" className="register-form__error" />
 
-                <button className="register-form__button" type="submit">
-                    Register
-                </button>
-            </form>
+                    <button className="register-form__button" type="submit">
+                        Register
+                    </button>
+                </Form>
+            </Formik>
         </main>
+    );
+};
 
-    )
-}
-
-export default observer(Register)
+export default observer(Register);

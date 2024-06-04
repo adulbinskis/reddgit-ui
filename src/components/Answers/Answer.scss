@@ -11,8 +11,8 @@
         border-radius: 1rem;
         padding: 1rem;
         margin: 1rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
         max-height: fit-content;
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
 }

@@ -1,55 +1,78 @@
-import { FC, useState } from 'react';
-import './EditQuestion.scss'
+import React from 'react';
+import './EditQuestion.scss';
 import { observer } from 'mobx-react-lite';
-
 import QuestionService from './services/QuestionService';
 import { QuestionDetail } from './models/QuestionDetail';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 type Props = {
-    question: QuestionDetail
+    question: QuestionDetail;
     onClose: () => void;
 };
 
-const Question: FC<Props> =({ question, onClose })=> {
-    const [title, setTitle] = useState(question.title);
-    const [content, setContent] = useState(question.content.replace(/<br\s*\/?>/gm, '\n'));
+const EditQuestion: React.FC<Props> = ({ question, onClose }) => {
+    const initialValues = {
+        title: question.title,
+        content: question.content.replace(/<br\s*\/?>/gm, '\n')
+    };
 
-    const handleUpdate = async () => {
+    const validationSchema = Yup.object({
+        title: Yup.string()
+            .required('Title is required')
+            .min(5, 'Title must be at least 5 characters long')
+            .max(128, 'Title must be at most 128 characters long'),
+        content: Yup.string()
+            .required('Content is required')
+            .min(10, 'Content must be at least 10 characters long')
+            .max(2048, 'Content must be at most 2048 characters long')
+    });
+
+    const handleUpdate = async (values: { title: string; content: string }) => {
         try {
-            const response = await QuestionService.updateQuestion(question.id, title, content.replace(/\n/g, '<br>'));
-            question.content = response.data.content
-            question.title = response.data.title
+            const response = await QuestionService.updateQuestion(question.id, values.title, values.content.replace(/\n/g, '<br>'));
+            question.title = response.data.title;
+            question.content = response.data.content;
             onClose();
         } catch (error) {
             console.error('Error updating question:', error);
         }
     };
 
-    if (!question) {
-        return null;
-    }
-
-    
     return (
-      <div className='editQuestion'>
         <div className='editQuestion'>
             <h2>Edit Question</h2>
-            <input
-                type='text'
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder='Title'
-            />
-            <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder='Content'
-            ></textarea>
-            <button onClick={handleUpdate}>Save</button>
+            <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={(values) => handleUpdate(values)}
+            >
+                {({ isValid, dirty }) => (
+                    <Form>
+                        <div>
+                            <Field
+                                type='text'
+                                name='title'
+                                placeholder='Title'
+                            />
+                            <ErrorMessage name='title' component='div' className='error' />
+                        </div>
+                        <div>
+                            <Field
+                                as='textarea'
+                                name='content'
+                                placeholder='Content'
+                            />
+                            <ErrorMessage name='content' component='div' className='error' />
+                        </div>
+                        <button type='submit' disabled={!(isValid && dirty)}>
+                            Save
+                        </button>
+                    </Form>
+                )}
+            </Formik>
         </div>
-
-      </div>
     );
-  }
-  
-  export default observer(Question)
+};
+
+export default observer(EditQuestion);
