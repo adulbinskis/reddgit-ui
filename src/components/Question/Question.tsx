@@ -23,7 +23,7 @@ const Question: FC =()=> {
     useEffect(() => {
         const fetchData = async () => {
           if (id) {
-            const response = await QuestionService.getQuestionWithAnswers(id);
+            const response = await QuestionService.getQuestion(id);
             setQuestion(response.data);
           }
         };
