@@ -40,9 +40,10 @@ export default class Store {
             localStorage.setItem('userId', response.data.userId)
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('email', response.data.email);
+            localStorage.setItem('userName', response.data.userName);
             console.log(response);
             this.setAuth(true);
-            this.setUser({email: response.data.email, userId: response.data.userId});
+            this.setUser({email: response.data.email, userId: response.data.userId, userName: response.data.userName});
         } catch (e) {
             throw e;
         }
@@ -63,7 +64,7 @@ export default class Store {
             const response = await AuthService.checkAuth();
             const email = localStorage.getItem('email');
             if(email != null){
-                this.setUser({email: localStorage.getItem('email'), userId: localStorage.getItem('userId')});
+                this.setUser({email: localStorage.getItem('email'), userId: localStorage.getItem('userId'), userName: localStorage.getItem('userName')});
                 this.setAuth(true);
             } else {
                 console.log('Unauthorized');

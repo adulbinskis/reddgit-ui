@@ -54,7 +54,7 @@ const Header: FC = () =>{
                     }
                     
                     </div>
-                    <div className="header__content__email">{store.user.email}</div>
+                    <div className="header__content__email">{store.user.userName}</div>
                     <div className="header__content__buttons">
                         {!store.isAuth ?
                             <>
