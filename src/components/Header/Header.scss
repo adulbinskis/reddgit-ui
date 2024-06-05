@@ -12,6 +12,11 @@
         flex-direction: row;
         justify-content: space-between;
 
+        &__email {
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
         &__buttons {
             text-align: end;
             .button {

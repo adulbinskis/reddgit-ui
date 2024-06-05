@@ -54,12 +54,17 @@ const Header: FC = () =>{
                     }
                     
                     </div>
+                    <div className="header__content__email">{store.user.email}</div>
                     <div className="header__content__buttons">
                         {!store.isAuth ?
                             <>
                                 <button type="button" className="button button--outline-light" onClick={handleOpenLogin}>Login</button>
                                 <button type="button" className="button button--warning" onClick={handleOpenRegister}>Sign-up</button>
-                            </> : <button type="button" className="button button--outline-light" onClick={handleLogout}>Logout</button>
+                            </> : 
+                            <>
+
+                                <button type="button" className="button button--outline-light" onClick={handleLogout}>Logout</button>
+                            </>
                         }
                     </div>
                 </div>
