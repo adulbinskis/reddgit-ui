@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { AuthResponse } from '../components/Authorization/models/AuthResponse';
 
 export const API_URL = `https://localhost:7148/api`;
 
@@ -15,21 +16,21 @@ $api.interceptors.request.use((config) => {  // Intervepter )
     return config;
 })
 
-$api.interceptors.response.use(
-    response => response,
-    async error => {
-        if (error.response.status === 403) {
-            console.log('Access forbidden');
+$api.interceptors.response.use((config) => {
+    return config;
+},async (error) => {
+    const originalRequest = error.config;
+    if (error.response.status === 401 && error.config && !error.config._isRetry) {  //if status code 401 refresh token
+        originalRequest._isRetry = true;
+        try {
+            const response = await axios.get<AuthResponse>(`${API_URL}/identity/refresh`, {withCredentials: true})
+            localStorage.setItem('token', response.data.token);
+            return $api.request(originalRequest);
+        } catch (e) {
+            console.log(e)
         }
-
-        if (error.response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('email');
-            localStorage.removeItem('userId');
-        }
-
-        return Promise.reject(error);
     }
-);
+    throw error;
+})
 
 export default $api;

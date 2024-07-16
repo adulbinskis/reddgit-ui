@@ -2,6 +2,9 @@
 import {makeAutoObservable} from "mobx";
 import { IUser } from "../components/Authorization/models/IUser";
 import AuthService from "../components/Authorization/services/AuthService";
+import { AuthResponse } from "../components/Authorization/models/AuthResponse";
+import axios from "axios";
+import { API_URL } from "../http";
 
 export default class Store {
     user = {} as IUser;
@@ -10,7 +13,6 @@ export default class Store {
 
     constructor() {
         makeAutoObservable(this);
-        this.checkAuth();
     }
 
     setAuth(bool: boolean) {
@@ -37,11 +39,7 @@ export default class Store {
     async login(email: string, password: string) {
         try {
             const response = await AuthService.login(email, password);
-            localStorage.setItem('userId', response.data.userId)
             localStorage.setItem('token', response.data.token);
-            localStorage.setItem('email', response.data.email);
-            localStorage.setItem('userName', response.data.userName);
-            console.log(response);
             this.setAuth(true);
             this.setUser({email: response.data.email, userId: response.data.userId, userName: response.data.userName});
         } catch (e) {
@@ -60,18 +58,16 @@ export default class Store {
     }
 
     async checkAuth(){
+        this.setLoading(true);
         try {
-            const response = await AuthService.checkAuth();
-            const email = localStorage.getItem('email');
-            if(email != null){
-                this.setUser({email: localStorage.getItem('email'), userId: localStorage.getItem('userId'), userName: localStorage.getItem('userName')});
-                this.setAuth(true);
-            } else {
-                console.log('Unauthorized');
-            }
-            console.log(response);
+            const response = await axios.get<AuthResponse>(`${API_URL}/identity/refresh`, {withCredentials: true});
+            localStorage.setItem('token', response.data.token);
+            this.setAuth(true);
+            this.setUser({email: response.data.email, userId: response.data.userId, userName: response.data.userName});
         } catch (error) {
             console.error('Error while checking authentication:', error);
+        } finally {
+            this.setLoading(false);
         }
     }
 }
